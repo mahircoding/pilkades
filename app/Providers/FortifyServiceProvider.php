@@ -59,6 +59,13 @@ class FortifyServiceProvider extends ServiceProvider
      */
     private function configureRateLimiting(): void
     {
+        RateLimiter::for('dpt-check', function (Request $request) {
+            $nik = (string) $request->input('nik', '');
+            $key = ($nik !== '' ? hash('sha256', $nik) : 'empty').'|'.$request->ip();
+
+            return Limit::perMinute(10)->by($key);
+        });
+
         RateLimiter::for('two-factor', function (Request $request) {
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });

@@ -11,24 +11,48 @@
             </flux:sidebar.header>
 
             <flux:sidebar.nav>
-                <flux:sidebar.group :heading="__('Platform')" class="grid">
+                <flux:sidebar.group :heading="__('Utama')" class="grid">
                     <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+
+                @canany(['manage desa profile', 'manage election periods', 'manage candidates', 'manage voters', 'import voters', 'view activity logs'])
+                <flux:sidebar.group :heading="__('Administrasi')" class="grid">
+                    @can('manage desa profile')
+                    <flux:sidebar.item icon="building-office" :href="route('admin.desa-profile.edit')" :current="request()->routeIs('admin.desa-profile.*')" wire:navigate>
+                        {{ __('Profil Desa') }}
+                    </flux:sidebar.item>
+                    @endcan
+
+                    @can('manage election periods')
+                    <flux:sidebar.item icon="calendar-days" :href="route('admin.election-periods.index')" :current="request()->routeIs('admin.election-periods.*')" wire:navigate>
+                        {{ __('Periode Pilkades') }}
+                    </flux:sidebar.item>
+                    @endcan
+
+                    @canany(['manage candidates', 'verify candidates'])
+                    <flux:sidebar.item icon="user-group" :href="route('admin.candidates.index')" :current="request()->routeIs('admin.candidates.*')" wire:navigate>
+                        {{ __('Calon Kepala Desa') }}
+                    </flux:sidebar.item>
+                    @endcanany
+
+                    @canany(['manage voters', 'import voters'])
+                    <flux:sidebar.item icon="clipboard-document-list" :href="route('admin.voters.index')" :current="request()->routeIs('admin.voters.*')" wire:navigate>
+                        {{ __('DPS / DPT') }}
+                    </flux:sidebar.item>
+                    @endcanany
+
+                    @can('view activity logs')
+                    <flux:sidebar.item icon="queue-list" :href="route('admin.activity-logs.index')" :current="request()->routeIs('admin.activity-logs.*')" wire:navigate>
+                        {{ __('Log Aktivitas') }}
+                    </flux:sidebar.item>
+                    @endcan
+                </flux:sidebar.group>
+                @endcanany
             </flux:sidebar.nav>
 
             <flux:spacer />
-
-            <flux:sidebar.nav>
-                <flux:sidebar.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                    {{ __('Repository') }}
-                </flux:sidebar.item>
-
-                <flux:sidebar.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                    {{ __('Documentation') }}
-                </flux:sidebar.item>
-            </flux:sidebar.nav>
 
             <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
         </flux:sidebar>
